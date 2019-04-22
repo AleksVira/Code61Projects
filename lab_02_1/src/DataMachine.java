@@ -23,9 +23,9 @@ public class DataMachine {
             }
 
             // Запрашиваю данные
-            System.out.println(">>>   " + dataCache.getData());
+            System.out.println(">>>   " + dataCache.getData(false));
         }
         // Принудительно получаю данные
-        System.out.println(">>>   " + dataCache.getDataImmediately());
+        System.out.println(">>>   " + dataCache.getData(true));
     }
 }

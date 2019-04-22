@@ -14,7 +14,7 @@ public class Cache<T> {
     }
 
 
-    public T getData(boolean rightNow) {
+    public T getData(@NotNull boolean rightNow) {
         if (rightNow) {
             // Принудительное получение данных и обновление кэша
             System.out.println("New data from source, immediately");
@@ -44,10 +44,5 @@ public class Cache<T> {
         return new Date().getTime();
     }
 
-    // Принудительное получение данных и обновление кэша
-    public T getDataImmediately() {
-        System.out.println("New data from source, immediately");
-        return updateData();
-    }
 
 }
