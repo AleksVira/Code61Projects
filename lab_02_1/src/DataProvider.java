@@ -1,3 +1,3 @@
 public interface DataProvider {
-    AnyData provide();
+    Object provide();
 }
