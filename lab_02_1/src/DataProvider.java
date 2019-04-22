@@ -1,3 +1,3 @@
-public interface DataProvider {
-    Object provide();
+public interface DataProvider<T> {
+    T provide();
 }

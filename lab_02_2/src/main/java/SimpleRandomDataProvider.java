@@ -1,7 +1,7 @@
 import java.util.Date;
 import java.util.Random;
 
-public class SimpleRandomDataProvider<T> implements DataProvider {
+public class SimpleRandomDataProvider implements DataProvider {
 
     private final Random rndProvider;
     private final String[] dataStorage;
@@ -21,9 +21,10 @@ public class SimpleRandomDataProvider<T> implements DataProvider {
         dataStorage[9] = "9-01257ffe-4a54-48ca-8e7e-ac183179a44c";
     }
 
+
     @Override
-    public T provide() {
+    public Object provide() {
         int index = rndProvider.nextInt(10);
-        return (T) dataStorage[index];
+        return dataStorage[index];
     }
 }
