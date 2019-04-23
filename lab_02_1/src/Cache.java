@@ -2,7 +2,7 @@ import com.sun.istack.internal.NotNull;
 
 import java.util.Date;
 
-public class Cache<T extends String> {
+public class Cache<T> {
     private final long dataLifetime;              // Время жизни данных в милисекундах
     private long dataStartTime;                   // Время получения новых данных от провайдера
     private final DataProvider dataProvider;      // Провайдер данных
