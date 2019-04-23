@@ -10,8 +10,10 @@ public class DataMachine {
         DataProvider provider = new SimpleRandomDataProvider();
         Cache dataCache = new Cache(LIFE_TIME_MILLISECONDS, provider);
         Random rnd = new Random();
+        // Первый вызов -- принудительно получаю данные
+        System.out.println("First: >>>   " + dataCache.getData(true));
         // Организую 8 запросов данных со случайным временем между ними, от 0 до 2 * LIFE_TIME_MILLISECONDS
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             long period = rnd.nextInt(2 * LIFE_TIME_MILLISECONDS) + MINIMAL_PERIOD;
             System.out.println("Pause: " + period / 1000 + " seconds");
 
