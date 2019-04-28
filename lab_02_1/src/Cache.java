@@ -5,10 +5,10 @@ import java.util.Date;
 public class Cache<T> {
     private final long dataLifetime;              // Время жизни данных в милисекундах
     private long dataStartTime;                   // Время получения новых данных от провайдера
-    private final DataProvider dataProvider;      // Провайдер данных
+    private final DataProvider<T> dataProvider;   // Провайдер данных
     private T data;                               // Данные от провайдера
 
-    public Cache(long dataLifetime, @NotNull DataProvider dataProvider) {
+    public Cache(long dataLifetime, @NotNull DataProvider<T> dataProvider) {
         if (dataProvider == null) {
             throw new NullPointerException("DataProvider is not initialized");
         } else {
@@ -18,7 +18,7 @@ public class Cache<T> {
     }
 
 
-    public T getData(@NotNull boolean rightNow) {
+    public T getData(boolean rightNow) {
         String message;
         if ((getNowTime() - dataStartTime) > dataLifetime || rightNow) {
             data = updateData();
@@ -31,7 +31,7 @@ public class Cache<T> {
     }
 
     private T updateData() {
-        T newData = (T) dataProvider.provide();
+        T newData = dataProvider.provide();
         dataStartTime = getNowTime();
         return newData;
     }
