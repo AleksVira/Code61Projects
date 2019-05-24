@@ -27,4 +27,13 @@ class CityInfoAdapter(val citiesList: ArrayList<CityInfo>,
             setOnClickListener { clickListener(cityInfo, pos) }
         }
     }
+
+    fun updateLast() {
+        notifyItemChanged(RepoCityInfo.cities.lastIndex)
+    }
+
+    fun updateOneItem(itemPosition: Int) {
+        notifyItemChanged(itemPosition)
+    }
+
 }

@@ -3,7 +3,7 @@ package ru.virarnd.cityinforecycler
 object RepoCityInfo {
     var cities: ArrayList<CityInfo> = arrayListOf()
 
-    init{
+    init {
         cities.add(CityInfo("AA", "Ru"))
         cities.add(CityInfo("BB", "En"))
         cities.add(CityInfo("CC", "Fr"))
@@ -14,14 +14,14 @@ object RepoCityInfo {
         cities.add(CityInfo("HH", "Ru"))
     }
 
-    fun addNewCity(cityName: String, country: String): Int {
-        if (isNewCity(cityName, country)) {
-            cities.add(CityInfo(cityName, country))
-            return RESULT_GOOD;
-        } else
-            return RESULT_BAD
+    fun checkCity(cityName: String, country: String): Int {
+        when {
+            emptyFields(cityName, country) -> return RESULT_EMPTY_FIELDS
+            isNewCity(cityName, country) -> return RESULT_GOOD_NEW;
+            else -> return RESULT_BAD_REPEAT
+        }
     }
 
     fun isNewCity(testCityName: String, testCountry: String) =
-        !cities.any{cityInfo -> cityInfo.cityName == testCityName && cityInfo.country == testCountry }
+        !cities.any { cityInfo -> cityInfo.cityName == testCityName && cityInfo.country == testCountry }
 }

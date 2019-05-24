@@ -9,6 +9,10 @@ import kotlinx.android.synthetic.main.activity_edit.*
 
 class EditActivity : AppCompatActivity() {
 
+    companion object {
+        const val POSITION_RESULT_KEY = "Position Result Key"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
@@ -25,19 +29,23 @@ class EditActivity : AppCompatActivity() {
         bt_save.setOnClickListener {
             val editCityName = ti_et_city_edit.text.toString()
             val editCountry = ti_et_country_edit.text.toString()
-            val editResult = RepoCityInfo.isNewCity(editCityName, editCountry)
-            when {
-                editResult -> {
+            val editResult: Int = RepoCityInfo.checkCity(editCityName, editCountry)
+
+            when (editResult) {
+                RESULT_EMPTY_FIELDS -> {
+                    Toast.makeText(this, "Ошибка ввода! Добавьте данных", Toast.LENGTH_SHORT).show()
+                }
+                RESULT_BAD_REPEAT -> {
+                    if (editCityName == startCity && editCountry == startCountry) finish() else
+                    Toast.makeText(this, "Ошибка! Такой город уже есть", Toast.LENGTH_SHORT).show()
+                }
+                RESULT_GOOD_NEW -> {
                     RepoCityInfo.cities[position].cityName = editCityName
                     RepoCityInfo.cities[position].country = editCountry
-                    setResult(Activity.RESULT_OK, Intent())
-                    finish() }
-                !editResult && editCityName == startCity && editCountry == startCountry -> {
-                    setResult(Activity.RESULT_OK, Intent())
-                    finish() }
-                    else -> {
-                        Toast.makeText(this, "Ошибка! Такой город уже есть", Toast.LENGTH_SHORT).show()
-                    }
+                    val goodIntent = Intent().putExtra(POSITION_RESULT_KEY, position)
+                    setResult(Activity.RESULT_OK, goodIntent)
+                    finish()
+                }
             }
         }
     }
