@@ -1,6 +1,6 @@
 package ru.virarnd.cityinforecycler
 
-class RepoCityInfo {
+object RepoCityInfo {
     var cities: ArrayList<CityInfo> = arrayListOf()
 
     init{
@@ -22,6 +22,6 @@ class RepoCityInfo {
             return RESULT_BAD
     }
 
-    private fun isNewCity(testCityName: String, testCountry: String) =
+    fun isNewCity(testCityName: String, testCountry: String) =
         !cities.any{cityInfo -> cityInfo.cityName == testCityName && cityInfo.country == testCountry }
 }
