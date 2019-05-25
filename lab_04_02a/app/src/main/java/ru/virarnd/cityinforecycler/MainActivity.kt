@@ -5,9 +5,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.virarnd.cityinforecycler.EditActivity.Companion.POSITION_RESULT_KEY
-import ru.virarnd.cityinforecycler.RepoCityInfo.cities
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val cities = cities
-        adapter =
-            CityInfoAdapter(cities, { cityInfo: CityInfo, position: Int -> cityInfoItemClicked(cityInfo, position) })
+        val cities = RepoCityInfo.getCities()
+        adapter = CityInfoAdapter { cityInfo: CityInfo, position: Int -> cityInfoItemClicked(cityInfo, position) }
         city_recyclerView.adapter = adapter
+        adapter.updateCities(cities)
 
         bt_add.setOnClickListener {
             val newCityName = et_city.text.toString()
@@ -40,10 +39,9 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Ошибка! Такой город уже есть", Toast.LENGTH_SHORT).show()
                 }
                 RESULT_GOOD_NEW -> {
-                    cities.add(CityInfo(newCityName, newCountry))
+                    adapter.addNewCity(newCityName, newCountry)
                     et_city.text.clear()
                     et_country.text.clear()
-                    adapter.updateLast()
                 }
             }
         }
@@ -60,8 +58,9 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode != EDIT_CITY_INFO_REQUEST || data == null) return
         if (resultCode == Activity.RESULT_OK) {
-            val changedPosition = data.getIntExtra(POSITION_RESULT_KEY, 0)
-            adapter.updateOneItem(changedPosition)
+            // Поскольку изменяется только один элемент, с известной позицией, можно обойтись  notifyItemChanged()
+            val position = data.getIntExtra(POSITION_KEY, 0)
+            adapter.updateOneCity(position)
         }
     }
 }

@@ -9,10 +9,6 @@ import kotlinx.android.synthetic.main.activity_edit.*
 
 class EditActivity : AppCompatActivity() {
 
-    companion object {
-        const val POSITION_RESULT_KEY = "Position Result Key"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
@@ -40,9 +36,9 @@ class EditActivity : AppCompatActivity() {
                     Toast.makeText(this, "Ошибка! Такой город уже есть", Toast.LENGTH_SHORT).show()
                 }
                 RESULT_GOOD_NEW -> {
-                    RepoCityInfo.cities[position].cityName = editCityName
-                    RepoCityInfo.cities[position].country = editCountry
-                    val goodIntent = Intent().putExtra(POSITION_RESULT_KEY, position)
+                    val goodIntent = Intent()
+                    goodIntent.putExtra(MainActivity.POSITION_KEY, position)
+                    RepoCityInfo.getCities()[position] = CityInfo(editCityName, editCountry)
                     setResult(Activity.RESULT_OK, goodIntent)
                     finish()
                 }

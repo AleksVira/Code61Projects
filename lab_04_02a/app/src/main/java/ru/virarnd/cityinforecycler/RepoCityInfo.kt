@@ -1,7 +1,7 @@
 package ru.virarnd.cityinforecycler
 
 object RepoCityInfo {
-    var cities: ArrayList<CityInfo> = arrayListOf()
+    private var cities: MutableList<CityInfo> = arrayListOf()
 
     init {
         cities.add(CityInfo("AA", "Ru"))
@@ -14,6 +14,8 @@ object RepoCityInfo {
         cities.add(CityInfo("HH", "Ru"))
     }
 
+    fun getCities() = cities
+
     fun checkCity(cityName: String, country: String): Int {
         when {
             emptyFields(cityName, country) -> return RESULT_EMPTY_FIELDS
@@ -24,4 +26,8 @@ object RepoCityInfo {
 
     fun isNewCity(testCityName: String, testCountry: String) =
         !cities.any { cityInfo -> cityInfo.cityName == testCityName && cityInfo.country == testCountry }
+
+    fun setCities(newCities: MutableList<CityInfo>) {
+        cities = newCities
+    }
 }
