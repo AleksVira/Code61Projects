@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-        xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data>
-        <variable name="recyclerItemViewModel" type="ru.virarnd.labrecyclerview.viewmodels.RecyclerItemViewModel"/>
-    </data>
-
-    <androidx.cardview.widget.CardView
-            android:id="@+id/item_card_view"
+<androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_card_view"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="5dp"
+        android:layout_margin="4dp"
+>
+    <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
 
-            <TextView
-                    android:id="@+id/tv_city_name"
-                    android:text="@string/city"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="@android:color/black"/>
-            <TextView
-                    android:id="@+id/tv_country"
-                    android:text="@string/country"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</layout>
+        <TextView
+                android:id="@+id/tv_city_name"
+                android:text="@string/city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@android:color/black" android:padding="4dp"/>
+        <TextView
+                android:id="@+id/tv_country"
+                android:text="@string/country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" android:padding="4dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

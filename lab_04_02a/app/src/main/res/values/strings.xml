@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CityInfoRecycler</string>
+    <string name="country">Страна</string>
+    <string name="city">Город</string>
+    <string name="add">Добавить</string>
+    <string name="save">Сохранить</string>
 </resources>
