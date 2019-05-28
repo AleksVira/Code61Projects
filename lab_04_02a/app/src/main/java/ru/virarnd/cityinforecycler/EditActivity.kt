@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_edit.*
+import ru.virarnd.cityinforecycler.MainActivity.Companion.CITY_INFO_KEY
+import ru.virarnd.cityinforecycler.MainActivity.Companion.POSITION_KEY
 
 class EditActivity : AppCompatActivity() {
 
@@ -13,8 +15,8 @@ class EditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
 
-        val position = intent.getIntExtra(MainActivity.POSITION_KEY, 0)
-        val cityInfo: CityInfo? = intent.getParcelableExtra(MainActivity.CITY_INFO_KEY)
+        val position = intent.getIntExtra(POSITION_KEY, 0)
+        val cityInfo: CityInfo? = intent.getParcelableExtra(CITY_INFO_KEY)
 
         val startCountry = cityInfo?.country
         val startCity = cityInfo?.cityName
@@ -37,7 +39,8 @@ class EditActivity : AppCompatActivity() {
                 }
                 RESULT_GOOD_NEW -> {
                     val goodIntent = Intent()
-                    goodIntent.putExtra(MainActivity.POSITION_KEY, position)
+                    goodIntent.putExtra(POSITION_KEY, position)
+                    goodIntent.putExtra(CITY_INFO_KEY, CityInfo(editCityName, editCountry))
                     RepoCityInfo.getCities()[position] = CityInfo(editCityName, editCountry)
                     setResult(Activity.RESULT_OK, goodIntent)
                     finish()

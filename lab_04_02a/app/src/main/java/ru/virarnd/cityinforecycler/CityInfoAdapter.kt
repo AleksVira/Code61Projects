@@ -29,9 +29,10 @@ class CityInfoAdapter(val clickListener: (CityInfo, Int) -> Unit) : RecyclerView
         citiesList = newCities
     }
 
-    fun updateOneCity(itemPosition: Int) {
-//        citiesList[itemPosition] = city
-        notifyItemChanged(itemPosition)
+    fun updateOneCity(itemPosition: Int, cityInfo: CityInfo) {
+        val newCitiesList = citiesList.toMutableList()
+        newCitiesList.set(itemPosition, cityInfo)
+        updateCities(newCitiesList)
     }
 
     fun addNewCity(newCityName: String, newCountry: String) {

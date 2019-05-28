@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.recyclerview.widget.DiffUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +59,8 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             // Поскольку изменяется только один элемент, с известной позицией, можно обойтись  notifyItemChanged()
             val position = data.getIntExtra(POSITION_KEY, 0)
-            adapter.updateOneCity(position)
+            val cityInfo = data.getParcelableExtra<CityInfo>(CITY_INFO_KEY)
+            adapter.updateOneCity(position, cityInfo)
         }
     }
 }
