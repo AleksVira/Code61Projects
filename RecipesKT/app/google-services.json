@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "514463642940",
+    "firebase_url": "https://gbkotlinnotes-dabb1.firebaseio.com",
+    "project_id": "gbkotlinnotes-dabb1",
+    "storage_bucket": "gbkotlinnotes-dabb1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514463642940:android:327ae28428937cf2",
+        "android_client_info": {
+          "package_name": "ru.virarnd.recipeskt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "514463642940-n25ukbdt6uod4ch3urn8sp50okofa2or.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.virarnd.recipeskt",
+            "certificate_hash": "981959e61c92ed9296a9761ca81752accfbc41fb"
+          }
+        },
+        {
+          "client_id": "514463642940-ksms1ju7dg2k4ddp4vpiff4om5p9jrb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9IdHj7uTmQnRl1OxFLuqnFXzJgK2_wkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "514463642940-ksms1ju7dg2k4ddp4vpiff4om5p9jrb7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

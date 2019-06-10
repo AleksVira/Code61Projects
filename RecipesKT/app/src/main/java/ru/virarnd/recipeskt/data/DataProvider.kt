@@ -10,7 +10,7 @@ interface DataProvider<Data> {
 
     fun addRecipe(recipe: Recipe)
 
-    fun updateRecipe(recipe: Recipe)
+    fun updateRecipe(position: Int, newRecipe: PendingRecipe)
 
     //TODO Добавить метод для удаления
     // Возможно, будет реагировать на свайп на элементе

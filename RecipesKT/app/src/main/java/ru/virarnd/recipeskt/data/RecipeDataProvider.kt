@@ -3,6 +3,9 @@ package ru.virarnd.recipeskt.data
 import ru.virarnd.recipeskt.data.NutritionFact.*
 
 object RecipeDataProvider : DataProvider<List<Recipe>> {
+
+    var recipes = provide()
+
     override fun isPresent(recipe: Recipe): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -11,11 +14,23 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateRecipe(recipe: Recipe) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun updateRecipe(position: Int, newRecipe: PendingRecipe) {
+        val newRecipeToList = with(newRecipe) {
+            Recipe(
+                name = name,
+                persons = persons,
+                images = images,
+                preparationTimeInMin = preparationTimeInMin,
+                category = category,
+                description = description,
+                ingredients = ingredients,
+                nutritionFacts = nutritionFacts
+            )
+        }
+        recipes.set(position, newRecipeToList)
     }
 
-    override fun provide() = listOf(
+    override fun provide() = mutableListOf(
         Recipe(
             name = "Fantastic Black Bean Chili",
             persons = 4,
@@ -41,7 +56,37 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
                 FAT.apply { value = 20.9 },
                 CARBS.apply { value = 18.9 }
             )
+        ),
+        Recipe(
+            name = "Chicken Caesar Salad",
+            persons = 1,
+            images = listOf(
+                "https://media.gettyimages.com/photos/chicken-meal-picture-id154954255?s=1024x1024",
+                "https://media.gettyimages.com/photos/caesar-salad-picture-id585088567?s=1024x1024",
+                "https://media.gettyimages.com/photos/bowl-of-caesar-salad-with-croutons-and-cheese-on-table-picture-id184938052?s=1024x1024"
+            ),
+            preparationTimeInMin = 15,
+            category = Category.SALAD,
+            description = "Slice the raw chicken breast into strips and fry in a pan with olive oil. Mix the roasted chicken, lettuce, dressing, and cheese in a bowl. Eat it.",
+            ingredients = listOf(
+                "1/2 cup high quality extra virgin olive oil",
+                "4 cloves fresh garlic, peeled, smashed, then minced",
+                "1 baguette, preferably a day old, sliced thin",
+                "1/4 cup freshly juiced lemon juice (plus more to taste)",
+                "4 ounces Parmesan cheese, grated",
+                "1 teaspoon anchovy paste, or 1-2 anchovies, smashed and minced",
+                "2 eggs"
+            ),
+            nutritionFacts = hashSetOf(
+                CALORIES.apply { value = 295.0 },
+                PROTEIN.apply { value = 32.0 },
+                FAT.apply { value = 16.0 },
+                CARBS.apply { value = 6.0 }
+            )
         )
     )
 
+    fun getRecipe(position: Int): Recipe {
+        return recipes[position]
+    }
 }

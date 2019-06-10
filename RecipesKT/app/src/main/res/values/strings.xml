@@ -3,4 +3,16 @@
     <string name="picture">picture</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="nutrition">Nutrition</string>
+    <string name="calories">Calories</string>
+    <string name="protein_g">Protein, g</string>
+    <string name="fat_g">Fat, g</string>
+    <string name="carbs_g">Carbs, g</string>
+    <string name="name">Name</string>
+    <string name="set_preparation_time">Set preparation time</string>
+    <string name="persons">Persons</string>
+    <string name="url_to_pictures">URL to pictures:</string>
+    <string name="category">Category</string>
+    <string name="add_description">Add description</string>
 </resources>
