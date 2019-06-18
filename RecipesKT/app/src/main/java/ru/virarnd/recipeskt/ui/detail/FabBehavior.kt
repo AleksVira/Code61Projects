@@ -20,7 +20,7 @@ open class FabBehavior(context: Context?, attrs: AttributeSet?) :
         axes: Int,
         type: Int
     ): Boolean {
-        Timber.d("onStartNestedScroll, ${axes == ViewCompat.SCROLL_AXIS_VERTICAL}")
+//        Timber.d("onStartNestedScroll, ${axes == ViewCompat.SCROLL_AXIS_VERTICAL}")
         return axes == ViewCompat.SCROLL_AXIS_VERTICAL
     }
 
@@ -36,7 +36,7 @@ open class FabBehavior(context: Context?, attrs: AttributeSet?) :
         type: Int
     ) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
-        Timber.d("onNestedScroll, ${dyConsumed}, ${dyUnconsumed}, target = ${target}")
+//        Timber.d("onNestedScroll, ${dyConsumed}, ${dyUnconsumed}, target = ${target}")
         if (dyConsumed > 0 && child.visibility == View.VISIBLE) {
             child.hide(object: FloatingActionButton.OnVisibilityChangedListener() {
                 override fun onHidden(fab: FloatingActionButton?) {

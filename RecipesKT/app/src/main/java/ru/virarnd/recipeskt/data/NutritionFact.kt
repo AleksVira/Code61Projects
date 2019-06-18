@@ -1,7 +1,14 @@
 package ru.virarnd.recipeskt.data
 
-enum class NutritionFact {
-    CALORIES, PROTEIN, FAT, CARBS;
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-    var value: Double? = null
+@Parcelize
+data class NutritionFact(
+    val type: Type,
+    val value: Double
+) : Parcelable {
+    enum class Type {
+        CALORIES, PROTEIN, FAT, CARBS;
+    }
 }

@@ -43,10 +43,6 @@ class RecipesRVAdapter(val onItemClick: (Int) -> Unit) : RecyclerView.Adapter<Re
         val recipeDiffUtilCallback = RecipeDiffUtilCallback(mainRecipesList, recipes)
         val recipesDiffResult = DiffUtil.calculateDiff(recipeDiffUtilCallback, false)
         recipesDiffResult.dispatchUpdatesTo(this)
-        //TODO Сохранить новый список рецептов в DataProvider (не здесь? До вызова этой функции?)
-        mainRecipesList = recipes
-
+        mainRecipesList = ArrayList(recipes.map{ it.copy()})
     }
-
-
 }

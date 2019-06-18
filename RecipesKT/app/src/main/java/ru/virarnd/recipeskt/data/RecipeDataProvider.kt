@@ -4,14 +4,21 @@ import ru.virarnd.recipeskt.data.NutritionFact.*
 
 object RecipeDataProvider : DataProvider<List<Recipe>> {
 
-    var recipes = provide()
+    private var recipes: MutableList<Recipe>
+
+    init {
+        recipes = provide()
+    }
 
     override fun isPresent(recipe: Recipe): Boolean {
+        //TODO Реализовать поиск по имени среди рецептов.
+        // Не может быть рецептов с одинаковыми названиями
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun addRecipe(recipe: Recipe) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun addNewEmptyRecipe() {
+        recipes.add(PendingRecipe().createRecipeFromPendingRecipe(PendingRecipe()))
+
     }
 
     override fun updateRecipe(position: Int, newRecipe: PendingRecipe) {
@@ -51,10 +58,10 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
                 "1 pound ground beef"
             ),
             nutritionFacts = hashSetOf(
-                CALORIES.apply { value = 331.0 },
-                PROTEIN.apply { value = 16.3 },
-                FAT.apply { value = 20.9 },
-                CARBS.apply { value = 18.9 }
+                NutritionFact(Type.CALORIES, 331.0),
+                NutritionFact(Type.PROTEIN, 16.3),
+                NutritionFact(Type.FAT, 20.9),
+                NutritionFact(Type.CARBS, 18.9)
             )
         ),
         Recipe(
@@ -69,19 +76,18 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
             category = Category.SALAD,
             description = "Slice the raw chicken breast into strips and fry in a pan with olive oil. Mix the roasted chicken, lettuce, dressing, and cheese in a bowl. Eat it.",
             ingredients = listOf(
-                "1/2 cup high quality extra virgin olive oil",
-                "4 cloves fresh garlic, peeled, smashed, then minced",
-                "1 baguette, preferably a day old, sliced thin",
-                "1/4 cup freshly juiced lemon juice (plus more to taste)",
-                "4 ounces Parmesan cheese, grated",
-                "1 teaspoon anchovy paste, or 1-2 anchovies, smashed and minced",
+                "1/2 cup high",
+                "4 cloves fresh garlic",
+                "1 baguette",
+                "1/4 cup lemon juice",
+                "4 ounces Parmesan cheese",
                 "2 eggs"
             ),
             nutritionFacts = hashSetOf(
-                CALORIES.apply { value = 295.0 },
-                PROTEIN.apply { value = 32.0 },
-                FAT.apply { value = 16.0 },
-                CARBS.apply { value = 6.0 }
+                NutritionFact(Type.CALORIES, 295.0),
+                NutritionFact(Type.PROTEIN, 32.0),
+                NutritionFact(Type.FAT, 16.0),
+                NutritionFact(Type.CARBS, 6.0)
             )
         )
     )
@@ -89,4 +95,10 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
     fun getRecipe(position: Int): Recipe {
         return recipes[position]
     }
+
+    fun getRecipesList(): List<Recipe> {
+        return recipes
+    }
+
+    fun getSize() = recipes.size
 }

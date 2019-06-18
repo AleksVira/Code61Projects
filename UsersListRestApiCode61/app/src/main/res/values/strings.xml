@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">UsersListRestApiCode61</string>
+    <string name="main_header">Users List from Reqres.in</string>
 </resources>

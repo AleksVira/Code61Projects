@@ -44,7 +44,6 @@
                     style="@style/header_2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
-                    <!--numberpicker:value="-5"-->
             <com.travijuu.numberpicker.library.NumberPicker
                     android:id="@+id/number_picker"
                     android:layout_width="130dp"
@@ -74,30 +73,213 @@
                     app:layout_constraintTop_toBottomOf="@+id/url_container"
                     app:layout_constraintStart_toStartOf="@+id/url_container"
                     app:layout_constraintEnd_toEndOf="@+id/url_container" android:layout_marginTop="8dp"/>
+
             <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_name_edit"
+                    android:hint="@string/name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    app:counterEnabled="true"
+                    app:errorEnabled="true"
+                    app:counterMaxLength="100"
                     app:layout_constraintTop_toTopOf="@+id/divider_edit_1" app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="hint"/>
+                        android:inputType="text"
+                        android:imeOptions="actionDone"
+                />
             </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_persons_edit"
+                    android:hint="@string/persons"
+                    android:layout_width="0dp"
+                    style="@style/Widget.AppCompat.Spinner.DropDown"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ti_name_edit"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@+id/ti_time_edit" android:layout_marginEnd="8dp">
+
+                <ru.virarnd.recipeskt.common.InstantAutoComplete
+                        android:id="@+id/autocomplete_tv_persons_edit"
+                        tools:text="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textEditSuggestionItemLayout="@layout/item_simple_spinner"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_time_edit"
+                    android:hint="@string/set_preparation_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                    android:layout_marginTop="16dp" app:layout_constraintTop_toBottomOf="@+id/ti_name_edit"
+                    app:layout_constraintStart_toEndOf="@+id/ti_persons_edit"
+                    app:layout_constraintHorizontal_bias="0.5" android:layout_marginStart="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_preparation_time_edit"
+                        tools:text="55 min"
+                        android:drawableEnd="@drawable/time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_category_edit"
+                    android:hint="@string/category"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.AppCompat.Spinner.DropDown"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ti_persons_edit" android:layout_marginEnd="8dp">
+
+                <ru.virarnd.recipeskt.common.InstantAutoComplete
+                        android:id="@+id/autocomplete_tv_category_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_description_edit"
+                    android:hint="@string/add_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="500"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/ti_category_edit"
+                    android:layout_marginEnd="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_description_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:textSize="14sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_ingredients_edit"
+                    android:hint="@string/add_ingredients"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="100"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ti_description_edit">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_ingredients_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:textSize="14sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                    android:id="@+id/tv_nutrition_label"
+                    android:text="@string/add_nutrition_facts"
+                    style="@style/header_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="8dp" android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ti_ingredients_edit"
+                    android:textColor="@android:color/black"/>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_calories_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/calories"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/tv_nutrition_label"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@+id/ti_protein_edit" android:layout_marginEnd="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_calories_value"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_protein_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/protein_g"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/tv_nutrition_label"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/ti_calories_edit"
+                    app:layout_constraintHorizontal_bias="0.5" android:layout_marginStart="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_protein_value"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_fat_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fat_g"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/ti_calories_edit"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@+id/ti_carbs_edit" android:layout_marginEnd="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_fat_value"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_carbs_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/carbs_g"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/ti_calories_edit"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/ti_fat_edit"
+                    app:layout_constraintHorizontal_bias="0.5" android:layout_marginStart="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ti_et_carbs_value"
+                        android:inputType="numberDecimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                    android:text="@string/nutrition_comment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_comment" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="8dp" android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ti_fat_edit" app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="italic"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/fab_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_dialog_email"/>
+            app:layout_behavior=".ui.detail.FabBehavior"
+            app:srcCompat="@drawable/save_option"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

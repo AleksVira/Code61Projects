@@ -8,7 +8,7 @@ interface DataProvider<Data> {
 
     fun isPresent(recipe: Recipe): Boolean
 
-    fun addRecipe(recipe: Recipe)
+    fun addNewEmptyRecipe()
 
     fun updateRecipe(position: Int, newRecipe: PendingRecipe)
 

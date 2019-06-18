@@ -1,9 +1,12 @@
 package ru.virarnd.recipeskt.data
 
-enum class Category {
-    BREAKFAST,
-    LUNCH,
-    SOUP,
-    SALAD,
-    MAIN_DISH
+import ru.virarnd.recipeskt.R
+
+enum class Category(var resourceId: Int) {
+    BREAKFAST(R.string.breakfast),
+    LUNCH(R.string.lunch),
+    SOUP(R.string.soup),
+    SALAD(R.string.salad),
+    MAIN_DISH(R.string.main_dish);
+
 }

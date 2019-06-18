@@ -44,4 +44,5 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'com.github.travijuu:numberpicker:1.0.7'
+    implementation 'com.github.Ibotta:Supported-Picker-Dialogs:1.0.0'
 }
