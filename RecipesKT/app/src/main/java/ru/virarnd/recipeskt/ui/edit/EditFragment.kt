@@ -1,83 +1,56 @@
 package ru.virarnd.recipeskt.ui.edit
 
 import android.content.Context
-import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.text.InputType
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.webkit.URLUtil
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import com.github.ajalt.timberkt.Timber
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.ibotta.android.support.pickerdialogs.SupportedTimePickerDialog
-import com.ibotta.android.support.pickerdialogs.SupportedTimePickerDialog.OnTimeSetListener
-
-import kotlinx.android.synthetic.main.activity_edit.*
-import kotlinx.android.synthetic.main.activity_edit.toolbar
+import kotlinx.android.synthetic.main.fragment_edit.*
 import ru.virarnd.recipeskt.R
-import ru.virarnd.recipeskt.common.InstantAutoComplete
-import ru.virarnd.recipeskt.common.toPx
+import ru.virarnd.recipeskt.common.*
 import ru.virarnd.recipeskt.data.*
 import ru.virarnd.recipeskt.data.NutritionFact.Type.*
-import ru.virarnd.recipeskt.data.RecipeDataProvider.getRecipe
 
+class EditFragment : BaseFragment<HomeFlow>(), BackButtonSupportFragment {
 
-class EditActivity : AppCompatActivity() {
-
-    lateinit var pendingRecipe: PendingRecipe
+    private lateinit var pendingRecipe: PendingRecipe
     private var recipePosition: Int = -1
     var waitingTimePicker = true
-    var badUrlCounter = 0
+    private var badUrlCounter = 0
 
     companion object {
-        private val INTENT_POSITION_LABEL = "recipe_position"
-        private val RECIPE_MARKER = "this_recipe"
 
-        fun newIntent(context: Context, position: Int?): Intent {
-            val intent = Intent(context, EditActivity::class.java)
-            intent.putExtra(INTENT_POSITION_LABEL, position)
-            return intent
+        fun newInstance(position: Int): EditFragment {
+            val fragment = EditFragment()
+            val arguments = Bundle()
+            arguments.putInt("recipePosition", position)
+            fragment.arguments = arguments
+            return fragment
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "Edit recipe"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        savedInstanceState?.let {
-            Timber.d { "Повторный запуск!" }
-            pendingRecipe =
-                savedInstanceState.getParcelable(RECIPE_MARKER) ?: throw IllegalArgumentException("Missed recipe!!!")
-        } ?: run {
-            Timber.d { "Первый запуск!" }
-            // Если первый запуск
-            recipePosition = intent.getIntExtra(INTENT_POSITION_LABEL, -1)
-            Timber.d { "Позиция: $recipePosition" }
-            //Если новый рецепт, то позиция <0 и новый рецепт создаётся со значениями "по умолчанию"
-            //И в конце при сохранении проверяется эта позиция, и либо сохраняется в новый рецпет (если валидация удачная), либо удаляется
-            if (recipePosition >= 0) {
-                // Беру исходный рецепт
-                val sourceRecipe = getRecipe(recipePosition)
-                // Помещаю во временный
-                pendingRecipe = createPendingRecipeFromRecipe(sourceRecipe)
-            } else {
-                pendingRecipe = PendingRecipe()
-            }
-
+        if (arguments != null) {
+            recipePosition = arguments!!.getInt("recipePosition", -1)
         }
-
-
-        // Заполняю экран данными из временного рецепта
-        initView(pendingRecipe)
+        pendingRecipe = if (recipePosition >= 0) {
+            // Беру исходный рецепт
+            val sourceRecipe = RecipeDataProvider.getRecipe(recipePosition)
+            // Помещаю во временный
+            createPendingRecipeFromRecipe(sourceRecipe)
+        } else {
+            PendingRecipe()
+        }
     }
 
     private fun createPendingRecipeFromRecipe(sourceRecipe: Recipe) = PendingRecipe(
@@ -91,21 +64,32 @@ class EditActivity : AppCompatActivity() {
         nutritionFacts = sourceRecipe.nutritionFacts
     )
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_edit, container, false)
+    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(RECIPE_MARKER, pendingRecipe)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Заполняю экран данными из временного рецепта
+        initView(pendingRecipe)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        flow?.changeTitle("Edit recipe")
+        flow?.changeHomeAsUpEnabled(true)
     }
 
 
     private fun initView(pendingRecipe: PendingRecipe) {
+        val context = context!!
         // Часть, ответственная за ввод URL для картинок
         val imagesCounter = pendingRecipe.images.size
         number_picker.value = imagesCounter
         number_picker.setValueChangedListener { value, _ -> changeUrlsRows(newValue = value) }
         url_container.removeAllViews()
         for (i in 0 until imagesCounter) {
-            val newEditText = TextInputEditText(this)
+            val newEditText = TextInputEditText(context)
             newEditText.id = View.generateViewId()
             newEditText.setText(pendingRecipe.images[i])
             newEditText.hint = "URL to picture ${i + 1}"
@@ -115,7 +99,7 @@ class EditActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             editTextParams.setMargins(0, 0, 0, 8.toPx)
-            val textInputLayout = TextInputLayout(this)
+            val textInputLayout = TextInputLayout(context)
             textInputLayout.id = View.generateViewId()
             val textInputLayoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -130,7 +114,7 @@ class EditActivity : AppCompatActivity() {
         ti_et_name_edit.setText(pendingRecipe.name)
         // Ввод количества человек и времени приготовления
         val spinnerPersonsAdapter =
-            ArrayAdapter(this, R.layout.item_simple_spinner, R.id.tv_item_persons, listOf(1, 2, 3, 4, 5, 6, 7, 8))
+            ArrayAdapter(context, R.layout.item_simple_spinner, R.id.tv_item_persons, listOf(1, 2, 3, 4, 5, 6, 7, 8))
         with(autocomplete_tv_persons_edit) {
             setText(pendingRecipe.persons.toString())
             setAdapter(spinnerPersonsAdapter)
@@ -143,14 +127,14 @@ class EditActivity : AppCompatActivity() {
         showTime(pendingRecipe)
 
         // Ввод категории
-        val strArray = Category.values().map { e -> baseContext.getString(e.resourceId) }
+        val strArray = Category.values().map { e -> context.getString(e.resourceId) }
         val spinnerCategoryAdapter =
-            ArrayAdapter(this, R.layout.item_simple_spinner, R.id.tv_item_persons, strArray)
+            ArrayAdapter(context, R.layout.item_simple_spinner, R.id.tv_item_persons, strArray)
         with(autocomplete_tv_category_edit) {
-            setText(baseContext.getString(pendingRecipe.category.resourceId))
+            setText(context.getString(pendingRecipe.category.resourceId))
             setAdapter(spinnerCategoryAdapter)
             setOnTouchListener { view, _ -> showAutocompleteDropDown(view) }
-            setOnItemClickListener { _, _, position, _ -> setNewCategory(strArray[position]) }
+            setOnItemClickListener { _, _, position, _ -> setNewCategory(context, strArray[position]) }
         }
         ti_category_edit.setOnTouchListener { _, _ -> showAutocompleteDropDown(autocomplete_tv_category_edit) }
 
@@ -162,31 +146,68 @@ class EditActivity : AppCompatActivity() {
         // Ввод ингредиентов
         ti_et_ingredients_edit.setText(pendingRecipe.ingredients.joinToString(separator = "\n"))
 
-        val calories = pendingRecipe.nutritionFacts.find { e -> e.type == NutritionFact.Type.CALORIES }
+        val calories = pendingRecipe.nutritionFacts.find { e -> e.type == CALORIES }
         calories?.let {
             val categoryVal = calories.value
             ti_et_calories_value.setText(categoryVal.toString())
         }
 
-        val protein = pendingRecipe.nutritionFacts.find { e -> e.type == NutritionFact.Type.PROTEIN }
+        val protein = pendingRecipe.nutritionFacts.find { e -> e.type == PROTEIN }
         protein?.let {
             val proteinVal = protein.value
             ti_et_protein_value.setText(proteinVal.toString())
         }
 
-        val fat = pendingRecipe.nutritionFacts.find { e -> e.type == NutritionFact.Type.FAT }
+        val fat = pendingRecipe.nutritionFacts.find { e -> e.type == FAT }
         fat?.let {
             val fatVal = fat.value
             ti_et_fat_value.setText(fatVal.toString())
         }
 
-        val carbs = pendingRecipe.nutritionFacts.find { e -> e.type == NutritionFact.Type.CARBS }
+        val carbs = pendingRecipe.nutritionFacts.find { e -> e.type == CARBS }
         carbs?.let {
             val carbsVal = carbs.value
             ti_et_carbs_value.setText(carbsVal.toString())
         }
-
         fab_edit.setOnClickListener { trySaveAndFinish() }
+    }
+
+    private fun changeUrlsRows(newValue: Int) {
+        Timber.d { "New value for rows = $newValue" }
+        with(pendingRecipe) {
+            if (newValue > images.size) {
+                images.add("")
+            } else if (newValue < images.size) {
+                images.remove(images.last())
+            }
+            initView(pendingRecipe)
+        }
+    }
+
+    private fun checkThisUrl(editText: EditText, i: Int) {
+        if (editText.text.length > 5) {
+            when (URLUtil.isValidUrl(editText.text.toString())) {
+                true -> {
+                    editText.error = null
+                    pendingRecipe.images[i] = editText.text.toString()
+                    if (badUrlCounter > 0) badUrlCounter--
+                }
+                else -> {
+                    editText.error = "URL ${i + 1} is invalid"
+                    badUrlCounter++
+                }
+            }
+        }
+    }
+
+    private fun showAutocompleteDropDown(view: View): Boolean {
+        view.isFocusableInTouchMode = false
+        (view as InstantAutoComplete).showDropDown()
+        return false
+    }
+
+    private fun setNewPersonsValue(position: Int) {
+        pendingRecipe.persons = position + 1
     }
 
     private fun showTime(pendingRecipe: PendingRecipe) {
@@ -200,16 +221,16 @@ class EditActivity : AppCompatActivity() {
             waitingTimePicker = false
             Timber.d { "Call TimePickerDialog" }
 
-            val onTimeSetListener = object : OnTimeSetListener {
-                override fun onTimeSet(view: TimePicker, hours: Int, minutes: Int) {
-                    setNewCookingTime(hours, minutes)
+            val onTimeSetListener = object : SupportedTimePickerDialog.OnTimeSetListener {
+                override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
+                    setNewCookingTime(hourOfDay, minute)
                     waitingTimePicker = true
                 }
             }
             val recipeHours = pendingRecipe.preparationTimeInMin / 60
             val recipeMinutes = pendingRecipe.preparationTimeInMin % 60
             val timePicker = SupportedTimePickerDialog(
-                this,
+                context!!,
                 R.style.SpinnerTimePickerDialogTheme,
                 onTimeSetListener,
                 recipeHours,
@@ -227,64 +248,39 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun setNewCookingTime(hours: Int, minutes: Int) {
-        val hoursStr = if (hours > 0) "Hours: ${hours}, m" else "M"
-        Timber.d { "${hoursStr}inutes: ${minutes}" }
+        val hoursStr = if (hours > 0) "Hours: $hours, m" else "M"
+        Timber.d { "${hoursStr}inutes: $minutes" }
         pendingRecipe.preparationTimeInMin = hours * 60 + minutes
         showTime(pendingRecipe)
-//        initView(pendingRecipe)
     }
 
-    private fun setNewPersonsValue(position: Int) {
-        pendingRecipe.persons = position + 1
-    }
-
-    private fun setNewCategory(categoryName: String) {
+    private fun setNewCategory(context: Context, categoryName: String) {
         val newCategory: Category =
-            Category.values().find { e -> baseContext.getString(e.resourceId) == categoryName }!!
+            Category.values().find { e -> context.getString(e.resourceId) == categoryName }!!
         Timber.d { "Find category! ${newCategory.name}" }
         pendingRecipe.category = newCategory
     }
 
-    private fun showAutocompleteDropDown(view: View): Boolean {
-        view.isFocusableInTouchMode = false
-        (view as InstantAutoComplete).showDropDown()
-        return false
-    }
-
-
-    private fun changeUrlsRows(newValue: Int) {
-        Timber.d { "New value for rows = ${newValue}" }
-        with(pendingRecipe) {
-            if (newValue > images.size) {
-                images.add("")
-            } else if (newValue < images.size) {
-                images.remove(images.last())
+    private fun trySaveAndFinish(): Boolean {
+        return if (validateAllFields()) {
+            saveFieldsToPending()
+            //При редактировании существующего он сохраняется,
+            //если новый -- записывается в новый рецепт в общем списке.
+            if (recipePosition >= 0) {
+                RecipeDataProvider.updateRecipe(recipePosition, pendingRecipe)
+            } else {
+                RecipeDataProvider.addNewEmptyRecipe()
+                recipePosition = RecipeDataProvider.getSize() - 1
+                RecipeDataProvider.updateRecipe(recipePosition, pendingRecipe)
             }
-            initView(pendingRecipe)
-        }
-    }
-
-
-    private fun checkThisUrl(editText: EditText, i: Int) {
-        if (editText.text.length > 5) {
-            val urlValidationResult = URLUtil.isValidUrl(editText.text.toString())
-            when (urlValidationResult) {
-                true -> {
-                    editText.error = null
-                    pendingRecipe.images[i] = editText.text.toString()
-                    if (badUrlCounter > 0) badUrlCounter--
-                }
-                else -> {
-                    editText.error = "URL ${i + 1} is invalid"
-                    badUrlCounter++
-                }
-            }
-        }
+            true
+        } else
+            false
     }
 
     private fun validateAllFields(): Boolean {
         if (badUrlCounter > 0) {
-            Toast.makeText(this, "Error! Check all fields!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity?.baseContext, "Error! Check all fields!", Toast.LENGTH_SHORT).show()
             return false
         }
         if (ti_et_name_edit.text?.length!! < 3) {
@@ -313,59 +309,39 @@ class EditActivity : AppCompatActivity() {
             ti_category_edit.error = null
         }
 
-        if (ti_et_description_edit.text.toString().isEmpty()) {
-            ti_description_edit.error = "Error: empty field"
-            ti_et_description_edit.error = ""
-            ti_et_name_edit.clearFocus()
-            return false
-        } else if (ti_et_description_edit.length() > ti_description_edit.counterMaxLength) {
-            ti_description_edit.error = "Too many characters!"
-            return false
-        } else {
-            ti_description_edit.error = null
-            ti_et_description_edit.error = null
+        when {
+            ti_et_description_edit.text.toString().isEmpty() -> {
+                ti_description_edit.error = "Error: empty field"
+                ti_et_description_edit.error = ""
+                ti_et_name_edit.clearFocus()
+                return false
+            }
+            ti_et_description_edit.length() > ti_description_edit.counterMaxLength -> {
+                ti_description_edit.error = "Too many characters!"
+                return false
+            }
+            else -> {
+                ti_description_edit.error = null
+                ti_et_description_edit.error = null
+            }
         }
 
-        if (ti_et_ingredients_edit.text.toString().isEmpty()) {
-            ti_ingredients_edit.error = "Error: empty field"
-            ti_et_ingredients_edit.error = ""
-            return false
-        } else if (ti_et_ingredients_edit.length() > ti_ingredients_edit.counterMaxLength) {
-            ti_ingredients_edit.error = "Too many characters!"
-            return false
-        } else {
-            ti_ingredients_edit.error = null
-            ti_et_ingredients_edit.error = null
+        when {
+            ti_et_ingredients_edit.text.toString().isEmpty() -> {
+                ti_ingredients_edit.error = "Error: empty field"
+                ti_et_ingredients_edit.error = ""
+                return false
+            }
+            ti_et_ingredients_edit.length() > ti_ingredients_edit.counterMaxLength -> {
+                ti_ingredients_edit.error = "Too many characters!"
+                return false
+            }
+            else -> {
+                ti_ingredients_edit.error = null
+                ti_et_ingredients_edit.error = null
+            }
         }
         return true
-    }
-
-    private fun trySaveAndFinish(): Boolean {
-        if (validateAllFields()) {
-//            Toast.makeText(this, "All correct!", Toast.LENGTH_LONG).show()
-            saveFieldsToPending()
-            //При редактировании существующего он сохраняется,
-            //если новый -- записывается в новый рецепт в общем списке.
-            if (recipePosition >= 0) {
-                RecipeDataProvider.updateRecipe(recipePosition, pendingRecipe)
-            } else {
-                RecipeDataProvider.addNewEmptyRecipe()
-                RecipeDataProvider.updateRecipe(RecipeDataProvider.getSize() - 1, pendingRecipe)
-            }
-            finish()
-            return true
-        } else
-            return false
-    }
-
-    override fun onResume() {
-        Timber.d{"EditActivity onResume"}
-        super.onResume()
-    }
-
-    override fun onPause() {
-        Timber.d{"EditActivity onPause"}
-        super.onPause()
     }
 
     private fun saveFieldsToPending() {
@@ -395,28 +371,20 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-
-
     private var doubleBackToExitPressedOnce = false
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
+        Timber.d { "Handle onBackPressed()" }
         if (trySaveAndFinish()) {
-            return
+            Timber.d { "trySaveAndFinish() SUCCESS" }
+            return true
         }
-
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed()
-            return
+            Timber.d { "doubleBackToExitPressedOnce" }
+            return true
         }
         doubleBackToExitPressedOnce = true
-        Toast.makeText(this, "Click BACK again to exit without saving", Toast.LENGTH_SHORT).show()
-        Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+        Toast.makeText(context, "Click BACK again to exit without saving", Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+        return false
     }
 }

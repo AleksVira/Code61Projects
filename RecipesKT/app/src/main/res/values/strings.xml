@@ -20,8 +20,12 @@
     <string name="soup">Soup</string>
     <string name="salad">Salad</string>
     <string name="main_dish">Main Dish</string>
-    <string name="test">Test</string>
     <string name="add_ingredients">Add ingredients</string>
     <string name="add_nutrition_facts">Add nutrition facts: *</string>
     <string name="nutrition_comment">* If unknown, leave blank or enter negative values</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="dot_symbol">■</string>
+    <string name="minus">—</string>
+    <string name="plus">+</string>
 </resources>

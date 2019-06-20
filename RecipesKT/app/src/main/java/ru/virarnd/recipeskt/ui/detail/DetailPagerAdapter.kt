@@ -8,7 +8,7 @@ import com.facebook.drawee.view.SimpleDraweeView
 import ru.virarnd.recipeskt.R
 import ru.virarnd.recipeskt.data.Recipe
 
-class DetailPagerAdapter(val recipe: Recipe) : PagerAdapter() {
+class DetailPagerAdapter(private val recipe: Recipe) : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val inflater = LayoutInflater.from(container.context)

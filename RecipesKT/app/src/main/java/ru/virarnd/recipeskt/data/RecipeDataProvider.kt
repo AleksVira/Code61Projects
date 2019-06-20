@@ -13,7 +13,7 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
     override fun isPresent(recipe: Recipe): Boolean {
         //TODO Реализовать поиск по имени среди рецептов.
         // Не может быть рецептов с одинаковыми названиями
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 
     override fun addNewEmptyRecipe() {
@@ -34,7 +34,7 @@ object RecipeDataProvider : DataProvider<List<Recipe>> {
                 nutritionFacts = nutritionFacts
             )
         }
-        recipes.set(position, newRecipeToList)
+        recipes[position] = newRecipeToList
     }
 
     override fun provide() = mutableListOf(

@@ -6,12 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_ingredients.view.*
 import ru.virarnd.recipeskt.R
-import timber.log.Timber
 
 class IngredientsAdapter(val ingredients: List<String>) : RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Timber.d("onCreateViewHolder")
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_ingredients, parent, false)
         return ViewHolder(view)
     }
@@ -22,7 +20,6 @@ class IngredientsAdapter(val ingredients: List<String>) : RecyclerView.Adapter<I
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(position: Int) {
-            Timber.d("Ingredients ViewHolder")
             itemView.ingredient_item_text.text = ingredients[position]
         }
     }

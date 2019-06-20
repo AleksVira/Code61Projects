@@ -12,23 +12,23 @@ class RecipeListDecorator(private val offsetInDp: Int) : RecyclerView.ItemDecora
         val halfInPx = (offsetInDp / 2).toPx
         val fullInPx = offsetInDp.toPx
 
-        outRect.bottom = halfInPx;
+        outRect.bottom = halfInPx
 
         // Поля сверху будут нулевые для первого ряда
         // Поля слева/справа будут зависеть от колонки (левая/правая)
         when (itemPosition) {
-            0, 1 -> outRect.top = 0;
+            0, 1 -> outRect.top = 0
             else -> outRect.top = halfInPx
         }
 
         when (itemPosition % 2) {
             0 -> {
-                outRect.left = fullInPx;
-                outRect.right = halfInPx;
+                outRect.left = fullInPx
+                outRect.right = halfInPx
             }
             else -> {
-                outRect.left = halfInPx;
-                outRect.right = fullInPx;
+                outRect.left = halfInPx
+                outRect.right = fullInPx
             }
         }
     }

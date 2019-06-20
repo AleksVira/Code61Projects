@@ -1,53 +1,46 @@
 package ru.virarnd.recipeskt.ui.detail
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.ViewGroup
 import com.github.ajalt.timberkt.Timber
+import kotlinx.android.synthetic.main.fragment_detail.*
 import ru.virarnd.recipeskt.R
-
-import kotlinx.android.synthetic.main.activity_detail.*
+import ru.virarnd.recipeskt.common.BaseFragment
+import ru.virarnd.recipeskt.common.HomeFlow
 import ru.virarnd.recipeskt.data.NutritionFact
 import ru.virarnd.recipeskt.data.RecipeDataProvider
-import ru.virarnd.recipeskt.ui.edit.EditActivity
 
-class DetailActivity : AppCompatActivity() {
+class DetailFragment : BaseFragment<HomeFlow>() {
 
-    var _position: Int = 0
+    private var position: Int = -1
 
     companion object {
-        private const val INTENT_POSITION_LABEL = "recipe_position"
-        private const val REQUEST_EDIT_CODE = 152
 
-        fun newIntent(context: Context, position: Int): Intent {
-            val intent = Intent(context, DetailActivity::class.java)
-            intent.putExtra(INTENT_POSITION_LABEL, position)
-            return intent
+        fun newInstance(position: Int): DetailFragment {
+            val fragment = DetailFragment()
+            val arguments = Bundle()
+            arguments.putInt("position", position)
+            fragment.arguments = arguments
+            return fragment
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "Recipe description"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        savedInstanceState?.let {
-            _position = savedInstanceState.getInt(INTENT_POSITION_LABEL)
-            Timber.d { "Position from savedInstanceState = ${_position}" }
-        } ?: run {
-            _position = intent.getIntExtra(INTENT_POSITION_LABEL, -1)
-            Timber.d { "Position from intent = ${_position}" }
+        if (arguments != null) {
+            position = arguments!!.getInt("position", -1)
         }
-        init(_position)
     }
 
-    private fun init(position: Int) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_detail, container, false)
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d { "DetailFragment -> position = $position" }
         val recipe = RecipeDataProvider.getRecipe(position)
         view_pager.adapter = DetailPagerAdapter(recipe)
 
@@ -57,9 +50,9 @@ class DetailActivity : AppCompatActivity() {
 
         with(recipe) {
             detail_header.text = name
-            val personStr = "${persons} person"
+            val personStr = "$persons person"
             tv_person_count.text = personStr
-            val minutesStr = "${preparationTimeInMin} min"
+            val minutesStr = "$preparationTimeInMin min"
             tv_detail_minutes.text = minutesStr
             tv_detail_description.text = description
 
@@ -118,35 +111,21 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
-        fab_detail.setOnClickListener { recipeStartEdit(_position) }
+        fab_detail.setOnClickListener { recipeStartEdit(position) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        flow?.changeTitle("Recipe description")
+        flow?.changeHomeAsUpEnabled(true)
     }
 
     private fun makeViewsInvisible(listOf: List<View>) = listOf.forEach { it.visibility = View.GONE }
 
 
     private fun recipeStartEdit(position: Int) {
-        val intent = EditActivity.newIntent(this, position)
-        Timber.d { "position in editActivity = ${position}" }
-        startActivityForResult(intent, REQUEST_EDIT_CODE)
+        Timber.d { "position in DetailActivity = $position" }
+        flow?.openEdit(position)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(INTENT_POSITION_LABEL, _position)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        init(_position)
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-    }
 }

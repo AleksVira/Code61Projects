@@ -4,8 +4,6 @@ interface DataProvider<Data> {
 
     fun provide(): Data
 
-//    fun getByName(name: String): Recipe
-
     fun isPresent(recipe: Recipe): Boolean
 
     fun addNewEmptyRecipe()

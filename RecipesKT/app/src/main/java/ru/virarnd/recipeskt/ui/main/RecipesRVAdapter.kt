@@ -13,7 +13,6 @@ import ru.virarnd.recipeskt.data.Recipe
 class RecipesRVAdapter(val onItemClick: (Int) -> Unit) : RecyclerView.Adapter<RecipesRVAdapter.ViewHolder>() {
 
     private var mainRecipesList = emptyList<Recipe>()
-    private val newRecipesList = listOf<Recipe>()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(position)
 
@@ -29,7 +28,7 @@ class RecipesRVAdapter(val onItemClick: (Int) -> Unit) : RecyclerView.Adapter<Re
         fun bind(position: Int) = with(containerView) {
             val recipe = mainRecipesList[position]
 
-            image.setImageURI(recipe.images[0]);
+            image.setImageURI(recipe.images[0])
             tv_card_recipe_name.text = recipe.name
             val timeString = "${recipe.preparationTimeInMin} min"
             tv_card_cooking_time.text = timeString
