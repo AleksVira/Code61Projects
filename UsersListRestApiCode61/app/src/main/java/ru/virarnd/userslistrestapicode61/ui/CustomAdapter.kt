@@ -27,7 +27,6 @@ class CustomAdapter(val onItemClick: (User) -> Unit) :
 
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-//        Timber.d{"onBindViewHolder -> position = $position, item = ${getItem(position)?.id}"}
         if (holder is UserViewHolder && (getItem(position) != null)) {
             holder.bind(getItem(position))
         } else {
@@ -63,12 +62,6 @@ class CustomAdapter(val onItemClick: (User) -> Unit) :
             submitList(newList)
             usersList = newList
         }
-    }
-
-    fun initAdapter(list: MutableList<User?>) {
-        Timber.d { "fun: initAdapter" }
-        submitList(list)
-        usersList = list
     }
 
     fun addUsers(newUsersList: MutableList<User>) {

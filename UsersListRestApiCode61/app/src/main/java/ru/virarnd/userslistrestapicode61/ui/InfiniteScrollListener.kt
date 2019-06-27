@@ -11,21 +11,21 @@ class InfiniteScrollListener (private val linearLayoutManager : LinearLayoutMana
     private var endOfFeedAdded = false
 
     companion object {
-        private const val VISIBLE_THRESHOLD = 1
-        private const val NUM_LOAD_ITEMS = 5
+        private const val VISIBLE_THRESHOLD = 2
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
-//        Timber.d { "Scroll detected! dx = $dx, dy = $dy" }
         if (dx == 0 && dy == 0)
             return
         val totalItemCount = linearLayoutManager.itemCount
 //        Timber.d { "totalItemCount = $totalItemCount" }
         val lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition()
 //        Timber.d { "lastVisibleItem = $lastVisibleItem" }
-        if (!loading && (totalItemCount <= (lastVisibleItem + VISIBLE_THRESHOLD)) && totalItemCount != 0 && !endOfFeedAdded && !pauseListening) {
+        // lastVisibleItem < 0 -- значит список еще пустой
+        if ((!loading && (totalItemCount <= (lastVisibleItem + VISIBLE_THRESHOLD)) && totalItemCount != 0 && !endOfFeedAdded && !pauseListening) || lastVisibleItem < 0) {
             listener.onLoadMore()
+            Timber.d{"listener.onLoadMore()"}
             loading = true
         }
     }

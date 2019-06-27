@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
     lateinit var infiniteScrollListener: InfiniteScrollListener
     private val reqresService: ReqresService = ReqresService.create()
     private var refreshingInProcess: Boolean
+    private var loadingInProcess: Boolean
     private var nextPageToLoad: Long
     private var totalPages: Long
     private val layoutManager: LinearLayoutManager = LinearLayoutManager(this)
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
 
     init {
         refreshingInProcess = false
+        loadingInProcess = false
         recyclerState = null
         nextPageToLoad = 1L
         totalPages = Long.MAX_VALUE
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
     companion object {
         const val LIST_STATE_KEY = "List State Key"
         const val NEXT_PAGE_KEY = "Next Page To Load"
+        const val REFRESHING = "Refreshing state"
         const val RECYCLER_STATE_KEY = "Recycler State Key"
     }
 
@@ -47,67 +50,44 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
         setContentView(ru.virarnd.userslistrestapicode61.R.layout.activity_main)
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
-            displayUsers()
+            prepareView()
+            recyclerAdapter.addUsers(usersInstance)
+            (recycler_view.layoutManager as LinearLayoutManager).onRestoreInstanceState(recyclerState)
         } else {
-            initView()
+            prepareView()
+            onLoadMore()
+//        recyclerAdapter.initAdapter(mutableListOf())
         }
 
 
     }
 
-    private fun displayUsers() {
-        swipe_refresh_layout.isEnabled = false
-        swipe_refresh_layout.setOnRefreshListener { swipeDown() }
-        swipe_refresh_layout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN)
+    private fun prepareView() {
+        with(swipe_refresh_layout) {
+            isEnabled = refreshingInProcess
+//            isEnabled = false
+            setOnRefreshListener { swipeDown() }
+            setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN)
+        }
         infiniteScrollListener = InfiniteScrollListener(layoutManager, this)
         infiniteScrollListener.setLoaded()
         recyclerAdapter = CustomAdapter { user: User -> userClicked(user) }
+        recycler_view.addItemDecoration(RecipeListDecorator(8))
         recycler_view.layoutManager = layoutManager
         recycler_view.adapter = recyclerAdapter
         recycler_view.addOnScrollListener(infiniteScrollListener)
-        recycler_view.addItemDecoration(RecipeListDecorator(8))
-        recyclerAdapter.addUsers(usersInstance)
-        (recycler_view.layoutManager as LinearLayoutManager).onRestoreInstanceState(recyclerState)
-    }
-
-
-    private fun initView() {
-        swipe_refresh_layout.isEnabled = false
-        swipe_refresh_layout.setOnRefreshListener { swipeDown() }
-        swipe_refresh_layout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN)
-        infiniteScrollListener = InfiniteScrollListener(layoutManager, this)
-        infiniteScrollListener.setLoaded()
-        recyclerAdapter = CustomAdapter { user: User -> userClicked(user) }
-        recycler_view.layoutManager = layoutManager
-        recycler_view.adapter = recyclerAdapter
-        recycler_view.addOnScrollListener(infiniteScrollListener)
-        recycler_view.addItemDecoration(RecipeListDecorator(8))
-        onLoadMore()
-//        recyclerAdapter.initAdapter(mutableListOf())
     }
 
     inner class UsersListResponseCallback : Callback<UsersListResponse> {
         override fun onFailure(call: Call<UsersListResponse>, t: Throwable) {
-            if (refreshingInProcess) {
-                refreshingInProcess = false
-                switchSwipeRefresh()
-            }
-            recyclerAdapter.removeLastNullUser()
+            turnOffWaitIndicators()
             Toast.makeText(applicationContext, "Pull to refresh list!", Toast.LENGTH_LONG).show()
-            swipe_refresh_layout.isEnabled = true
             Timber.d { "Failure!" }
-        }
-
-        private fun switchSwipeRefresh() {
-            if (swipe_refresh_layout.isRefreshing) {
-                swipe_refresh_layout.isRefreshing = false
-                swipe_refresh_layout.isEnabled = false
-            }
+            swipe_refresh_layout.isEnabled = true
         }
 
         override fun onResponse(call: Call<UsersListResponse>, response: Response<UsersListResponse>) {
-            refreshingInProcess = false
-            recyclerAdapter.removeLastNullUser()
+            turnOffWaitIndicators()
             val serverResponse = response.body()
             totalPages = serverResponse?.totalPages ?: Long.MAX_VALUE
             val userDataList = response.body()?.usersDataList
@@ -118,9 +98,19 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
             val newUsersList = userDataList.toMutableList()
             recyclerAdapter.addUsers(newUsersList)
             Timber.d { "response ${response.body()?.usersDataList?.get(1)?.email}" }
-            switchSwipeRefresh()
+//            turnOffWaitIndicators()
             nextPageToLoad++
             infiniteScrollListener.setLoaded()
+        }
+
+        private fun turnOffWaitIndicators() {
+            loadingInProcess = false
+            refreshingInProcess = false
+            recyclerAdapter.removeLastNullUser()
+            if (swipe_refresh_layout.isRefreshing) {
+                swipe_refresh_layout.isRefreshing = false
+                swipe_refresh_layout.isEnabled = false
+            }
         }
     }
 
@@ -133,20 +123,22 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
         }
     }
 
-
     private fun userClicked(user: User) {
         Timber.d { "Users id clicked = ${user.id}" }
     }
 
     override fun onLoadMore() {
-        Timber.d { "CurrentPage = $nextPageToLoad, TotalPages = $totalPages" }
+        if (loadingInProcess) {
+            return
+        }
+//        Timber.d { "CurrentPage = $nextPageToLoad, TotalPages = $totalPages" }
         if (nextPageToLoad > totalPages) {
             Toast.makeText(applicationContext, "No more data!", Toast.LENGTH_SHORT).show()
             return
         }
         Timber.d { "Want load more!" }
         recyclerAdapter.addNullUser()
-
+        loadingInProcess = true
         call = reqresService.getUsers(nextPageToLoad)
         call!!.enqueue(UsersListResponseCallback())
     }
@@ -162,9 +154,12 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putParcelableArrayList(LIST_STATE_KEY, recyclerAdapter.usersList.toCollection(ArrayList()))
-        outState?.putParcelable(RECYCLER_STATE_KEY, recycler_view.layoutManager?.onSaveInstanceState())
-        outState?.putLong(NEXT_PAGE_KEY, nextPageToLoad)
+        with(outState!!) {
+            putParcelableArrayList(LIST_STATE_KEY, recyclerAdapter.usersList.toCollection(ArrayList()))
+            putParcelable(RECYCLER_STATE_KEY, recycler_view.layoutManager?.onSaveInstanceState())
+            putLong(NEXT_PAGE_KEY, nextPageToLoad)
+            putBoolean(REFRESHING, refreshingInProcess)
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -178,6 +173,7 @@ class MainActivity : AppCompatActivity(), InfiniteScrollListener.OnLoadMoreListe
         recyclerState = savedInstanceState.getParcelable(RECYCLER_STATE_KEY)
         usersInstance = savedInstanceState.getParcelableArrayList(LIST_STATE_KEY)
         nextPageToLoad = savedInstanceState.getLong(NEXT_PAGE_KEY)
+        refreshingInProcess = savedInstanceState.getBoolean(REFRESHING)
     }
 
 
